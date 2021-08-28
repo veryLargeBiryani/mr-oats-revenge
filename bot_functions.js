@@ -26,7 +26,6 @@ async function execute(message, serverQueue, queue){
 
     // prepare logic before adding song; decide if search should be performed
     let song;
-    let pickedFormat;
     if (args.length < 2){
         return message.channel.send("nothing was ordered.");
     } else if (args[1].includes("http") > 0){
@@ -35,8 +34,6 @@ async function execute(message, serverQueue, queue){
             title: songInfo.videoDetails.title,
             url: songInfo.videoDetails.video_url
         };
-        pickedFormat = await ytdl.filterFormats(songInfo.formats, 'audioonly');
-        console.log('format found: ', pickedFormat);
     } else {
         const filters1 = await ytsr.getFilters(searchTitle);
         const filter1 = filters1.get('Type').get('Video');
@@ -72,7 +69,7 @@ async function execute(message, serverQueue, queue){
             var connection = await voiceChannel.join();
             queueContract.connection = connection;
             // call play function and start song
-            cook(message.guild, queueContract.songs[0], queue, pickedFormat);
+            cook(message.guild, queueContract.songs[0], queue);
         } catch (err) {
             // print error if bot fails join
             console.log(err);
@@ -86,20 +83,22 @@ async function execute(message, serverQueue, queue){
     }
 }
 
-function cook(guild, song, queue, pickedFormat){
+async function cook(guild, song, queue){
     const serverQueue = queue.get(guild.id);
     if (!song) {
         serverQueue.voiceChannel.leave();
         queue.delete(guild.id);
         return;
     }
-
+    
+    let info = await ytdl.getInfo(song.url);
+    let songFormat = ytdl.filterFormats(info.formats, 'audioonly');
+    //console.log(songFormat); <-- print formats in console so you can see if it's actually working (it does now!)
     const dispatcher = serverQueue.connection
-        .play(ytdl(song.url), {
-            format: pickedFormat})
+        .play(ytdl(song.url, {format: songFormat[0]}))
         .on("finish", () => {
             serverQueue.songs.shift();
-            cook(guild, serverQueue.songs[0], queue, pickedFormat);
+            cook(guild, serverQueue.songs[0], queue);
         })
         .on("error", error => console.error(error));
     dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
