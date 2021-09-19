@@ -1,7 +1,12 @@
 // dependencies
+const http = require('http');
 const ytdl = require('ytdl-core');
 const ytsr = require('ytsr');
+const { getData, getPreview, getTracks } = require('spotify-url-info');
 const ytpl = require('ytpl');
+let dispatcher;
+const {prefix} = require('./config.json');
+let isPaused = {};
 
 // functions
 async function execute(message, serverQueue, queue){
@@ -29,11 +34,16 @@ async function execute(message, serverQueue, queue){
     if (args.length < 2){
         return message.channel.send("nothing was ordered.");
     } else if (args[1].includes("http") > 0){
-        const songInfo = await ytdl.getInfo(args[1]);
-        song = {
-            title: songInfo.videoDetails.title,
-            url: songInfo.videoDetails.video_url
-        };
+        if (args[1].includes("open.spotify.com/track/")){
+            args[1] = await spotifyTrack(args[1]); //swap spotify url for youtube url
+            console.log(`Spotify track was found on youtube: ${args[1]}`);
+        } //else {
+            const songInfo = await ytdl.getInfo(args[1]);
+            song = {
+                title: songInfo.videoDetails.title,
+                url: songInfo.videoDetails.video_url
+            }
+        //};
     } else {
         const filters1 = await ytsr.getFilters(searchTitle);
         const filter1 = filters1.get('Type').get('Video');
@@ -70,6 +80,7 @@ async function execute(message, serverQueue, queue){
             queueContract.connection = connection;
             // call play function and start song
             cook(message.guild, queueContract.songs[0], queue);
+            isPaused[message.guild.id] = false;
         } catch (err) {
             // print error if bot fails join
             console.log(err);
@@ -94,7 +105,7 @@ async function cook(guild, song, queue){
     let info = await ytdl.getInfo(song.url);
     let songFormat = ytdl.filterFormats(info.formats, 'audioonly');
     //console.log(songFormat); <-- print formats in console so you can see if it's actually working (it does now!)
-    const dispatcher = serverQueue.connection
+    dispatcher = serverQueue.connection
         .play(ytdl(song.url, {format: songFormat[0]}))
         .on("finish", () => {
             serverQueue.songs.shift();
@@ -108,6 +119,7 @@ async function cook(guild, song, queue){
 }
 
 function lunch(message, serverQueue){
+    console.log('user requested to skip');
     if (!message.member.voice.channel)
         return message.channel.send(
             "only chefs can change the ingredients."
@@ -144,11 +156,61 @@ function menu(message, serverQueue){
     }
 }
 
+async function spotifyTrack(url){
+    let spotTrack = await getData(url); //grab metadata w/ url
+    let spotTrackInfo = `${spotTrack.name} ${spotTrack.artists[0].name}`;  //string to search on youtube
+    const filtersSpot = await ytsr.getFilters(spotTrackInfo); // following lines copied from oatmeal main to search for youtube url
+    const filterSpot = filtersSpot.get('Type').get('Video');
+    if (filterSpot.url == null){
+        return message.channel.send("couldn't find anything to plate."); //will probably need some error handling here
+    } else {
+        const spotSearchResults = await ytsr(filterSpot.url, {pages : 1});
+        return spotSearchResults.items[0].url;
+    }
+}
+
+async function playlistLoader(url){
+    let playlist = [];
+    if(url.includes('spotify')){
+        let playlistSp = await getTracks(url);
+        for (i=0;i<playlistSp.length;i++){
+            let temp = await spotifyTrack(playlistSp[i].external_urls.spotify);
+            playlist.push(temp);
+        }
+    } else if (url.includes('youtube')){
+        let playlistID = await ytpl.getPlaylistID(url);
+        let playlistYt = await ytpl(playlistID);
+        for (i=0;i<playlistYt.items.length;i++){
+            playlist.push(playlistYt.items[i].shortUrl)
+        }
+    }
+    let test;
+    return playlist;
+}
+
+async function drink(message,serverQueue){
+    console.log('user requested to pause');
+        dispatcher.pause();
+        return message.channel.send(`Type ${prefix}leftovers to finish your meal!`);
+}
+
+async function leftovers(message,serverQueue){
+    console.log('user requested to resume');
+        dispatcher.resume();
+        return message.channel.send(`Enjoy your leftovers`);
+}
+
+async function instantOats(message,serverQueue){
+    //code for a playnext function goes here
+}
 // export
 module.exports = {
     execute,
     cook,
     lunch,
     cancel,
-    menu
+    menu,
+    playlistLoader,
+    drink,
+    leftovers
 }

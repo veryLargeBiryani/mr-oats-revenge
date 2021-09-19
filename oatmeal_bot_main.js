@@ -2,14 +2,12 @@
 const Discord = require('discord.js');
 const{
     prefix,
-    token,
+    token
 } = require('./config.json');
 const random = require('random');
 const bf = require('./bot_functions.js');
+const oatmeal = 'https://www.youtube.com/watch?v=0Dpw0VvH4m0'; //youtube link to the oatmeal song
 //******************************
-
-// variables to modify
-let oldContent;
 
 // main body of code
 const client = new Discord.Client();
@@ -29,25 +27,28 @@ client.once('disconnect', () =>{
 });
 
 client.on('message', async message =>{
+    //if (message.author.id == '317465832341110786') return message.channel.send('haha no oats for you LOSER');
     if (message.author.bot) return;
     if (!message.content.startsWith(prefix)) return;
 
-    const serverQueue = queue.get(message.guild.id);
+    const serverQueue = queue.get(message.guild.id); //create server's music queue before song/cook is requested
 
     if (message.content.startsWith(`${prefix}cook`)){
-        /*if (random.int(0,0) == 0){
-            oldContent = `${message.content}`;
-            message.content = "!cook https://www.youtube.com/watch?v=0Dpw0VvH4m0";
-            await execute(message, serverQueue);
-            setTimeout(() => {
-                message.content = oldContent;
-                execute(message, serverQueue);
-            }, 20000);
-            return;
-        } else {*/
-        bf.execute(message, serverQueue, queue);
-        return;
-        //}
+        let playlistSongs = [];
+        if (message.content.includes('playlist') || message.content.includes('&list')){
+            playlistSongs = await bf.playlistLoader(message.content.substring(6));
+        } else {
+            playlistSongs[0] = message.content.substring(6); //put single song url into array alone
+        }
+        if (random.int(0,199) == 1){ //random chance of oatmeal 1/200
+            playlistSongs = [oatmeal];
+            message.channel.send("surprise oatmeal!!! the song you queued has been sent to the ether. please try again and enjoy the delicious oatmeal :bowl_with_spoon: dumbass");
+        }
+        for (z=0;z<playlistSongs.length;z++){//something is wrong with this loop, it is infinite and skips 2!
+            message.content = `!cook ${playlistSongs[z]}`;
+            await bf.execute(message, serverQueue, queue);
+        }
+        return; 
     } else if (message.content.startsWith(`${prefix}lunch`)){
         bf.lunch(message, serverQueue);
         return;
@@ -60,18 +61,22 @@ client.on('message', async message =>{
     } else if (message.content.startsWith(`${prefix}help`)){
         message.channel.send(
 `commands:
-!help - shows you this
-!cook - cook up a tune
-!menu - what's for breakfast?
-!lunch - skip your meal
-!cancel - cancels your order`
-        );
+${prefix}help - shows you this
+${prefix}menu - what's for breakfast?
+${prefix}cook - cook up a tune - now compatible with spotify and youtube playlists :)
+${prefix}drink - take a break from your meal and hydrate. you can enjoy your leftovers with ${prefix}leftovers
+${prefix}lunch - skip your meal
+${prefix}cancel - cancels your order`);
         return;
     } else if (message.content.startsWith(`${prefix}oatmeal`)){
-        message.content = "!cook https://www.youtube.com/watch?v=0Dpw0VvH4m0";
+        message.content = `${prefix}cook ${oatmeal}`;
         bf.execute(message, serverQueue, queue);
         return;
-    } else{
+    } else if (message.content.startsWith(`${prefix}drink`)){
+        bf.drink(message,serverQueue);
+    }  else if (message.content.startsWith(`${prefix}leftovers`)){
+        bf.leftovers(message,serverQueue);
+    } else {
         message.channel.send("that is not cookable.");
         return;
     }
