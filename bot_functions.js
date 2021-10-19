@@ -1,5 +1,4 @@
 // dependencies
-const http = require('http');
 const ytdl = require('ytdl-core');
 const ytsr = require('ytsr');
 const { getData, getPreview, getTracks } = require('spotify-url-info');
@@ -33,18 +32,18 @@ async function execute(message, serverQueue, queue){
     let song;
     if (args.length < 2){
         return message.channel.send("nothing was ordered.");
-    } else if (args[1].includes("http") > 0){
+    } else if (args[1].includes("http") > 0){ //if command had a direct link
         if (args[1].includes("open.spotify.com/track/")){
-            args[1] = await spotifyTrack(args[1]); //swap spotify url for youtube url
-            console.log(`Spotify track was found on youtube: ${args[1]}`);
-        } //else {
+            song = await spotifyTrack(args[1]);
+            console.log(`Spotify track was found on youtube: ${song.title}`);
+        } else {
             const songInfo = await ytdl.getInfo(args[1]);
             song = {
                 title: songInfo.videoDetails.title,
                 url: songInfo.videoDetails.video_url
             }
-        //};
-    } else {
+        }
+    } else { //if command had a search
         const filters1 = await ytsr.getFilters(searchTitle);
         const filter1 = filters1.get('Type').get('Video');
         if (filter1.url == null){
@@ -55,7 +54,7 @@ async function execute(message, serverQueue, queue){
                 title: searchResults.items[0].title,
                 url: searchResults.items[0].url
             }
-        };
+        }
     }
 
     if (!serverQueue){
@@ -165,11 +164,15 @@ async function spotifyTrack(url){
         return message.channel.send("couldn't find anything to plate."); //will probably need some error handling here
     } else {
         const spotSearchResults = await ytsr(filterSpot.url, {pages : 1});
-        return spotSearchResults.items[0].url;
+        return {
+            "title": spotSearchResults.items[0].title,
+            "url": spotSearchResults.items[0].url
+        };
     }
 }
 
-async function playlistLoader(url){
+async function playlistLoader(url,queue,message){
+    //build playlist
     let playlist = [];
     if(url.includes('spotify')){
         let playlistSp = await getTracks(url);
@@ -181,11 +184,48 @@ async function playlistLoader(url){
         let playlistID = await ytpl.getPlaylistID(url);
         let playlistYt = await ytpl(playlistID);
         for (i=0;i<playlistYt.items.length;i++){
-            playlist.push(playlistYt.items[i].shortUrl)
+            let ytplSong = {
+                "title": playlistYt.items[i].title,
+                "url": playlistYt.items[i].shortUrl
+            }
+            playlist.push(ytplSong);
         }
     }
-    let test;
-    return playlist;
+    //load playlist
+    const voiceChannel = message.member.voice.channel;
+    const serverQueue = queue.get(message.guild.id);
+    if (!serverQueue){
+        // creating contract for queue
+        const queueContract = {
+            textChannel: message.channel,
+            voiceChannel: voiceChannel,
+            connection: null,
+            songs: playlist, //import playlist as starting songs in queue
+            volume: 5,
+            playing: true,
+        };
+    
+        // setting queue using contract
+        queue.set(message.guild.id, queueContract);
+        
+        try {
+            // try to join voice and save connection into object
+            var connection = await voiceChannel.join();
+            queueContract.connection = connection;
+            // call play function and start song
+            cook(message.guild, queueContract.songs[0], queue);
+            isPaused[message.guild.id] = false;
+        } catch (err) {
+            // print error if bot fails join
+            console.log(err);
+            queue.delete(message.guild.id);
+            return message.channel.send("no cooks in the kitchen.");
+        }
+    } else {
+        serverQueue.songs = serverQueue.songs.concat(playlist); //add playlist to end of queue if song is already playing
+        console.log(serverQueue.songs);
+        return message.channel.send(`${url} has been added to your plate`);
+    }
 }
 
 async function drink(message,serverQueue){

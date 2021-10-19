@@ -34,18 +34,13 @@ client.on('message', async message =>{
     const serverQueue = queue.get(message.guild.id); //create server's music queue before song/cook is requested
 
     if (message.content.startsWith(`${prefix}cook`)){
-        let playlistSongs = [];
-        if (message.content.includes('playlist') || message.content.includes('&list')){
-            playlistSongs = await bf.playlistLoader(message.content.substring(6));
+        if (message.content.includes('playlist') || message.content.includes('open.spotify.com/album/') || message.content.includes('&list')){
+            await bf.playlistLoader(message.content.substring(6),queue,message);
         } else {
-            playlistSongs[0] = message.content.substring(6); //put single song url into array alone
-        }
-        if (random.int(0,199) == 1){ //random chance of oatmeal 1/200
-            playlistSongs = [oatmeal];
-            message.channel.send("surprise oatmeal!!! the song you queued has been sent to the ether. please try again and enjoy the delicious oatmeal :bowl_with_spoon: dumbass");
-        }
-        for (z=0;z<playlistSongs.length;z++){//something is wrong with this loop, it is infinite and skips 2!
-            message.content = `!cook ${playlistSongs[z]}`;
+            if (random.int(0,199) == 1){ //random chance of oatmeal 1/150
+                message.channel.send("surprise oatmeal!!! the song you queued has been sent to the ether. please try again and enjoy the delicious oatmeal :bowl_with_spoon: dumbass");
+                message.content = `!cook ${oatmeal}`;
+            }
             await bf.execute(message, serverQueue, queue);
         }
         return; 
