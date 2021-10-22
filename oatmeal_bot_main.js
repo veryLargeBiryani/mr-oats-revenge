@@ -30,7 +30,6 @@ client.on('message', async message =>{
     //if (message.author.id == '317465832341110786') return message.channel.send('haha no oats for you LOSER');
     if (message.author.bot) return;
     if (!message.content.startsWith(prefix)) return;
-
     const serverQueue = queue.get(message.guild.id); //create server's music queue before song/cook is requested
 
     if (message.content.startsWith(`${prefix}cook`)){

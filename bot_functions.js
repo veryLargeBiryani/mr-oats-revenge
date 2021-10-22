@@ -3,9 +3,7 @@ const ytdl = require('ytdl-core');
 const ytsr = require('ytsr');
 const { getData, getPreview, getTracks } = require('spotify-url-info');
 const ytpl = require('ytpl');
-let dispatcher;
 const {prefix} = require('./config.json');
-let isPaused = {};
 
 // functions
 async function execute(message, serverQueue, queue){
@@ -79,7 +77,6 @@ async function execute(message, serverQueue, queue){
             queueContract.connection = connection;
             // call play function and start song
             cook(message.guild, queueContract.songs[0], queue);
-            isPaused[message.guild.id] = false;
         } catch (err) {
             // print error if bot fails join
             console.log(err);
@@ -103,17 +100,20 @@ async function cook(guild, song, queue){
     
     let info = await ytdl.getInfo(song.url);
     let songFormat = ytdl.filterFormats(info.formats, 'audioonly');
-    //console.log(songFormat); <-- print formats in console so you can see if it's actually working (it does now!)
-    dispatcher = serverQueue.connection
-        .play(ytdl(song.url, {format: songFormat[0]}))
+    let dispatcher = serverQueue.connection
+        .play(ytdl(song.url, {format: songFormat[0]})) //add cookies here to get age restricted videos (error 410 in Miniget)
         .on("finish", () => {
             serverQueue.songs.shift();
             cook(guild, serverQueue.songs[0], queue);
         })
-        .on("error", error => console.error(error));
+        .on("error", e => {
+            console.error(e);
+            //serverQueue.songs.shift();
+            cook(guild, serverQueue.songs[0], queue); //restart song on socket error
+        });
     dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
     serverQueue.textChannel.send(`breakfast is served: ${song.title}`);
-    console.log(serverQueue.songs)
+    console.log('now playing', song);
     return;
 }
 
@@ -148,17 +148,21 @@ function menu(message, serverQueue){
     else {
         let myPlate = `here's yer grub: `;
         for (i = 0; i < serverQueue.songs.length; i++){
+            if (i>9){
+                break;
+            }
             myPlate = `${myPlate}
     ${i + 1}. ${serverQueue.songs[i].title}`;
         }
-        return message.channel.send(myPlate);
+        return message.channel.send(`${myPlate}
+(${serverQueue.songs.length} total meals are being prepared)`);
     }
 }
 
 async function spotifyTrack(url){
     let spotTrack = await getData(url); //grab metadata w/ url
-    let spotTrackInfo = `${spotTrack.name} ${spotTrack.artists[0].name}`;  //string to search on youtube
-    const filtersSpot = await ytsr.getFilters(spotTrackInfo); // following lines copied from oatmeal main to search for youtube url
+    let spotTrackInfo = `${spotTrack.name} ${spotTrack.artists[0].name}`;
+    const filtersSpot = await ytsr.getFilters(spotTrackInfo); //search for youtube url
     const filterSpot = filtersSpot.get('Type').get('Video');
     if (filterSpot.url == null){
         return message.channel.send("couldn't find anything to plate."); //will probably need some error handling here
@@ -175,11 +179,10 @@ async function playlistLoader(url,queue,message){
     //build playlist
     let playlist = [];
     if(url.includes('spotify')){
-        let playlistSp = await getTracks(url);
-        for (i=0;i<playlistSp.length;i++){
-            let temp = await spotifyTrack(playlistSp[i].external_urls.spotify);
-            playlist.push(temp);
-        }
+        let playlistSp = await getTracks(url.substring(0,url.indexOf('?'))); //use url w/o parameters
+        playlist = await Promise.all(playlistSp.map((track) =>{
+            return spotifyTrack(track.external_urls.spotify);
+        }));
     } else if (url.includes('youtube')){
         let playlistID = await ytpl.getPlaylistID(url);
         let playlistYt = await ytpl(playlistID);
@@ -196,6 +199,7 @@ async function playlistLoader(url,queue,message){
     const serverQueue = queue.get(message.guild.id);
     if (!serverQueue){
         // creating contract for queue
+        console.log('playlist queued', playlist);
         const queueContract = {
             textChannel: message.channel,
             voiceChannel: voiceChannel,
@@ -214,7 +218,6 @@ async function playlistLoader(url,queue,message){
             queueContract.connection = connection;
             // call play function and start song
             cook(message.guild, queueContract.songs[0], queue);
-            isPaused[message.guild.id] = false;
         } catch (err) {
             // print error if bot fails join
             console.log(err);
@@ -223,26 +226,27 @@ async function playlistLoader(url,queue,message){
         }
     } else {
         serverQueue.songs = serverQueue.songs.concat(playlist); //add playlist to end of queue if song is already playing
-        console.log(serverQueue.songs);
-        return message.channel.send(`${url} has been added to your plate`);
+        console.log('playlist queued', playlist);
+        return message.channel.send(`A playlist has been added to your plate`);
     }
 }
 
 async function drink(message,serverQueue){
     console.log('user requested to pause');
-        dispatcher.pause();
+        serverQueue.connection.dispatcher.pause();
         return message.channel.send(`Type ${prefix}leftovers to finish your meal!`);
 }
 
 async function leftovers(message,serverQueue){
     console.log('user requested to resume');
-        dispatcher.resume();
+        serverQueue.connection.dispatcher.resume();
         return message.channel.send(`Enjoy your leftovers`);
 }
 
 async function instantOats(message,serverQueue){
     //code for a playnext function goes here
 }
+
 // export
 module.exports = {
     execute,
