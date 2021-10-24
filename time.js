@@ -1,6 +1,6 @@
 // dependencies
 const {prefix} = require('./config.json');
-const {cook} = require('./bot_functions.js');
+const {cook} = require('./cook.js');
 
 async function drink(message,serverQueue){
     console.log('user requested to pause');

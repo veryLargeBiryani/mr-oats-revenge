@@ -10,11 +10,11 @@ class Song {
 }
 
 async function getSong(args){
-    let searchTitle = "";
+    let searchTitle = "explicit audio"; //added explicit/audio tags to avoid censorship and music videos
     for (i = 1; i < args.length; i++){
         searchTitle = `${searchTitle} ${args[i]}`;
     }
-    console.log(`user searched for "${searchTitle}"`);
+    console.log(`user searched for "${searchTitle.split("explicit audio ")[1]}"`); //remove "explicit audio" from console log
     if (args.length < 2){ //if no search or url was provided
         return new Song(null,null);
     } else if (args[1].includes("http")){ //if command had a direct link
@@ -38,14 +38,14 @@ async function getSong(args){
 
 async function getSpotifySong(url){
     let spotTrack = await getData(url); //grab metadata w/ url
-    let spotTrackInfo = `${spotTrack.name} ${spotTrack.artists[0].name}`;
+    let spotTrackInfo = `${spotTrack.name} ${spotTrack.artists[0].name} explicit audio`; //added explicit/audio tags to avoid censorship and music videos
     const filtersSpot = await ytsr.getFilters(spotTrackInfo); //search for youtube url
     const filterSpot = filtersSpot.get('Type').get('Video');
     if (filterSpot.url == null){
         return new Song(null,null);
     } else {
         const spotSearchResults = await ytsr(filterSpot.url, {pages : 1});
-        console.log(`Spotify track was found on youtube: ${spotSearchResults.items[0].title}`);
+        //console.log(`Spotify track was found on youtube: ${spotSearchResults.items[0].title}`);
         return new Song(spotSearchResults.items[0].title, spotSearchResults.items[0].url);
     }
 }

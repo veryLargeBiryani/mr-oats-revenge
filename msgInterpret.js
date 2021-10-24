@@ -1,8 +1,7 @@
 //dependencies
 const {execute} = require('./execute.js');
 const {drink,leftovers} = require('./time.js');
-const {lunch,cancel} = require('./queue.js');
-const bf = require('./bot_functions.js');
+const {menu,lunch,cancel} = require('./queue.js');
 const {prefix} = require('./config.json');
 const random = require('random');
 const oatmeal = 'https://www.youtube.com/watch?v=0Dpw0VvH4m0'; //youtube link to the oatmeal song
@@ -15,16 +14,11 @@ async function msgInterpret (message,queue) {
     if (message.author.bot) return;
     if (!message.content.startsWith(prefix)) return;
     if (message.content.startsWith(`${prefix}cook`)){
-        if (message.content.includes('playlist') || message.content.includes('open.spotify.com/album/') || message.content.includes('&list')){
-            await bf.playlistLoader(message.content.substring(6),queue,message);
-        } else {
-            if (random.int(0,199) == 1){ //random chance of oatmeal 1/150
-                message.channel.send("surprise oatmeal!!! the song you queued has been sent to the ether. please try again and enjoy the delicious oatmeal :bowl_with_spoon: dumbass");
-                message.content = `!cook ${oatmeal}`;
-            }
-            await execute(message, serverQueue, queue);
+        if (random.int(0,199) == 1){ //random chance of oatmeal 1/200
+            message.channel.send("surprise oatmeal!!! the song you queued has been sent to the ether. please try again and enjoy the delicious oatmeal :bowl_with_spoon: dumbass");
+            message.content = `!cook ${oatmeal}`;
         }
-        return; 
+        execute(message, queue);
     } else if (message.content.startsWith(`${prefix}lunch`)){
         lunch(message, serverQueue);
         return;
@@ -32,7 +26,7 @@ async function msgInterpret (message,queue) {
         cancel(message, serverQueue);
         return;
     } else if (message.content.startsWith(`${prefix}menu`)){
-        bf.menu(message, serverQueue);
+        menu(message, serverQueue);
         return;
     } else if (message.content.startsWith(`${prefix}help`)){
         message.channel.send(
@@ -46,7 +40,7 @@ ${prefix}cancel - cancels your order`);
         return;
     } else if (message.content.startsWith(`${prefix}oatmeal`)){
         message.content = `${prefix}cook ${oatmeal}`;
-        execute(message, serverQueue, queue);
+        execute(message, queue);
         return;
     } else if (message.content.startsWith(`${prefix}drink`)){
         drink(message,serverQueue);
