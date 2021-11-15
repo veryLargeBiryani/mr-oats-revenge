@@ -3,6 +3,8 @@ const {getTracks} = require('spotify-url-info');
 const {getSpotifySong, getSong} = require('./getSong.js');
 const {cook} = require('./cook.js');
 const ytpl = require('ytpl');
+const {MessageEmbed} = require('discord.js');
+const { menu } = require('./queue.js');
 
 async function execute(message, queue){
     //initialize variables
@@ -22,7 +24,11 @@ async function execute(message, queue){
         // get song object
         playlist = [await getSong(args)];
         if (playlist[0].title == null || playlist[0].url == null){
-        return message.channel.send('Please request a dish you would like me to cook!'); //song object came back empty
+            //message back to discord channel
+            const _msg = new MessageEmbed();
+            _msg.setColor('RED');
+            _msg.setTitle('Please request a dish you would like me to cook!');//song object came back empty
+            return message.channel.send(_msg); //use message.channel instead of serverQueue.textChannel since queue might not have been set yet (this could be first song being executed)
         }
     } else { //if playlist
         playlist = [];
@@ -43,11 +49,20 @@ async function execute(message, queue){
         }
     }
     //connect to voip
-    if (!voiceChannel)
-        return message.channel.send("Please enter the kitchen before cooking your meal.");
+    if (!voiceChannel){
+        //message back to discord channel
+        const _msg = new MessageEmbed();
+        _msg.setColor('RED');
+        _msg.setTitle('Please enter the kitchen before cooking your meal.');
+        return message.channel.send(_msg);
+    } 
     const permissions = voiceChannel.permissionsFor(message.client.user);
     if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
-        return message.channel.send("You don't belong in the kitchen.");
+        //message back to discord channel
+        const _msg = new MessageEmbed();
+        _msg.setColor('RED');
+        _msg.setTitle(`You don't belong in the kitchen.`);
+        return message.channel.send(_msg);
     }
 
     //push songs to guild's music session
@@ -64,10 +79,11 @@ async function execute(message, queue){
         console.log('queued',playlist);
         // map new serverQueue to queue object by server ID
         queue.set(message.guild.id, queueContract);
-        
+        if (playlist.length > 1){ //if we are queueing a playlist we show the queue to go along with the queue'd song message above
+            menu(message,{songs: playlist, textChannel: message.channel}, 'GREEN', 'new meals have been requested'); //impersonate serverqueue object but with new loaded playlist songs!
+        } //use message.channel here since queueContract may not have finished setting yet.
         try {
             // try to join voice and save connection into object
-            //var connection = await voiceChannel.join();
             queueContract.connection = await voiceChannel.join();
             // call play function and start song
             cook(message.guild, queueContract.songs[0], queue);
@@ -75,12 +91,26 @@ async function execute(message, queue){
             // print error if bot fails join
             console.log(err);
             queue.delete(message.guild.id);
-            return message.channel.send("the stove is not working at this time");
+            //message back to discord channel
+            const _msg = new MessageEmbed();
+            _msg.setColor('RED');
+            _msg.setTitle(`the stove is not working at this time`);
+            return message.channel.send(_msg);
         }
     } else {
         serverQueue.songs = serverQueue.songs.concat(playlist); //add playlist to end of queue if song is already playing
         console.log('queued',playlist);
-        return message.channel.send(`Food has been added to your plate`);
+        if (playlist.length > 1){ //if we are queueing a playlist we show the queue to go along with the queue'd song message above
+            menu(message,{songs: playlist, textChannel: serverQueue.textChannel}, 'GREEN', 'new meals have been requested'); //impersonate serverqueue object but with new loaded playlist songs!
+        } else {
+            //message back to discord channel
+            const _msg = new MessageEmbed();
+            _msg.setColor('GREEN');
+            _msg.setTitle(`*${playlist[0].title}* has been added to your plate`);
+            _msg.setURL(playlist[0].url);
+            await message.channel.send(_msg);
+        }
+        return;
     }
 }
 

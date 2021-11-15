@@ -2,6 +2,7 @@
 const ytdl = require('ytdl-core');
 const ytsr = require('ytsr');
 const {getData} = require('spotify-url-info');
+const { MessageEmbed } = require('discord.js');
 class Song {
     constructor(title, url){
         this.title = title;
@@ -10,11 +11,11 @@ class Song {
 }
 
 async function getSong(args){
-    let searchTitle = "explicit audio"; //added explicit/audio tags to avoid censorship and music videos
+    let searchTitle = "";
     for (i = 1; i < args.length; i++){
         searchTitle = `${searchTitle} ${args[i]}`;
     }
-    console.log(`user searched for "${searchTitle.split("explicit audio ")[1]}"`); //remove "explicit audio" from console log
+
     if (args.length < 2){ //if no search or url was provided
         return new Song(null,null);
     } else if (args[1].includes("http")){ //if command had a direct link
@@ -38,7 +39,7 @@ async function getSong(args){
 
 async function getSpotifySong(url){
     let spotTrack = await getData(url); //grab metadata w/ url
-    let spotTrackInfo = `${spotTrack.name} ${spotTrack.artists[0].name} explicit audio`; //added explicit/audio tags to avoid censorship and music videos
+    let spotTrackInfo = `${spotTrack.name} ${spotTrack.artists[0].name}`;
     const filtersSpot = await ytsr.getFilters(spotTrackInfo); //search for youtube url
     const filterSpot = filtersSpot.get('Type').get('Video');
     if (filterSpot.url == null){
