@@ -1,30 +1,14 @@
 // dependencies
 const { MessageEmbed } = require('discord.js');
-//const {meal} = require('./time.js');
 const ytdl = require('ytdl-core');
 
 // functions
 async function cook(guild, song, queue){
     const serverQueue = queue.get(guild.id);
     if (!song) {
-        //let fetched = await serverQueue.textChannel.fetchMessages({limit: 100});
-        try {
-            serverQueue.textChannel.bulkDelete(100); //clean text chat messages when oats disconnects
-        }
-        catch(e){
-            console.log('Message delete failure', e);
-        }
-        console.log('end of server queue, oats is disconnecting');
-        serverQueue.voiceChannel.leave();
-        //message back to discord channel
-        const _msg = new MessageEmbed();
-        _msg.setColor('WHITE');
-        _msg.setTitle(`No more oatmeal! Order another meal if you are still hungry!`);
-        serverQueue.textChannel.send(_msg);
-        queue.delete(guild.id);
+        serverQueue.voiceChannel.leave(); //this triggers client.on('voiceStatusUpdate') in main.js
         return;
     }
-    
     let info = await ytdl.getInfo(song.url);
     let songFormat = ytdl.filterFormats(info.formats, 'audioonly');
     let dispatcher = serverQueue.connection
