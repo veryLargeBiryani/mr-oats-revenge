@@ -1,6 +1,6 @@
 {
   "name": "oatmeal_bot",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "a little bot to make oatmeal",
   "main": "oatmeal_bot_main.js",
   "scripts": {
@@ -18,7 +18,7 @@
     "random": "^3.0.6",
     "spotify-url-info": "^2.2.3",
     "spotify-web-api-node": "^5.0.2",
-    "ytdl-core": "^4.9.1",
+    "ytdl-core": "^4.9.2",
     "ytpl": "^2.2.3",
     "ytsr": "^3.5.3"
   }

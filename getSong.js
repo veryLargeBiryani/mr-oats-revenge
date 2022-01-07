@@ -22,8 +22,13 @@ async function getSong(args){
         if (args[1].includes("open.spotify.com/track/")){
             return await getSpotifySong(args[1]);
         } else {
-            const songInfo = await ytdl.getInfo(args[1]);
-            return new Song(songInfo.videoDetails.title,songInfo.videoDetails.video_url);
+            try {
+                const songInfo = await ytdl.getInfo(args[1]);
+                return new Song(songInfo.videoDetails.title,songInfo.videoDetails.video_url);
+            }
+            catch (e){
+                return new Song(null,null); //if we can't get the song we return nothing
+            }
         }
     } else { //if command had a search
         const filters1 = await ytsr.getFilters(searchTitle);

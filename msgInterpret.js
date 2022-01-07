@@ -55,6 +55,6 @@ ${prefix}cancel - cancels your order
     } else if (message.content == `${prefix}meal`){
         meal(serverQueue,message);
     }
-    message.delete(); //delete after message is identified as mr oats command
+    //message.delete(); //delete after message is identified as mr oats command
 }
 module.exports = {msgInterpret};

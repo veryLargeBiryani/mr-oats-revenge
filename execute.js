@@ -27,7 +27,7 @@ async function execute(message, queue){
             //message back to discord channel
             const _msg = new MessageEmbed();
             _msg.setColor('RED');
-            _msg.setTitle('Please request a dish you would like me to cook!');//song object came back empty
+            _msg.setTitle('The requested dish is too spicy! Please cook something else!');//song object came back empty due to being age restricted or private etc
             return message.channel.send(_msg); //use message.channel instead of serverQueue.textChannel since queue might not have been set yet (this could be first song being executed)
         }
     } else { //if playlist
