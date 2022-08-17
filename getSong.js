@@ -1,7 +1,8 @@
 //dependencies
+const fetch = require('isomorphic-unfetch');
 const ytdl = require('ytdl-core');
 const ytsr = require('ytsr');
-const {getData} = require('spotify-url-info');
+const {getData} = require('spotify-url-info')(fetch);
 const { MessageEmbed } = require('discord.js');
 class Song {
     constructor(title, url){

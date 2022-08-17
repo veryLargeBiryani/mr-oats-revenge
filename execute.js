@@ -1,5 +1,6 @@
 // dependencies
-const {getTracks} = require('spotify-url-info');
+const fetch = require('isomorphic-unfetch');
+const {getTracks} = require('spotify-url-info')(fetch);
 const {getSpotifySong, getSong} = require('./getSong.js');
 const {cook} = require('./cook.js');
 const ytpl = require('ytpl');

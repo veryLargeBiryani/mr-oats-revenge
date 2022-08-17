@@ -1,19 +1,20 @@
 {
   "name": "oatmeal_bot",
-  "version": "2.0.2",
+  "version": "3.0.0",
   "description": "a little bot to make oatmeal",
   "main": "oatmeal_bot_main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "alex hyams, dan brackenbury",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@discordjs/opus": "^0.5.3",
     "discord.js": "^12.5.3",
     "ffmpeg": "^0.0.4",
     "ffmpeg-static": "^4.4.0",
     "fluent-ffmpeg": "^2.1.2",
+    "isomorphic-unfetch": "^3.1.0",
     "prism-media": "^1.2.6",
     "random": "^3.0.6",
     "spotify-url-info": "^3.1.4",
@@ -21,5 +22,16 @@
     "ytdl-core": "^4.11.0",
     "ytpl": "^2.2.3",
     "ytsr": "^3.5.3"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/helpvisa/oatmeal_bot.git"
+  },
+  "keywords": [
+    "oatmeal"
+  ],
+  "bugs": {
+    "url": "https://github.com/helpvisa/oatmeal_bot/issues"
+  },
+  "homepage": "https://github.com/helpvisa/oatmeal_bot#readme"
 }
