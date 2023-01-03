@@ -1,7 +1,7 @@
 // dependencies
 const { MessageEmbed } = require('discord.js');
 const ytdl = require('ytdl-core');
-const { disconnect } = require('./sessionEnd');
+const { disconnect } = require('../src/sessionEnd');
 
 // functions
 async function cook(guild, song, queue){

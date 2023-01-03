@@ -1,37 +1,27 @@
 {
-  "name": "oatmeal_bot",
-  "version": "3.0.0",
-  "description": "a little bot to make oatmeal",
-  "main": "oatmeal_bot_main.js",
+  "name": "mr-oats-revenge",
+  "version": "1.0.0",
+  "description": "a bot to play music on discord",
+  "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "alex hyams, dan brackenbury",
-  "license": "MIT",
-  "dependencies": {
-    "@discordjs/opus": "^0.5.3",
-    "discord.js": "^12.5.3",
-    "ffmpeg": "^0.0.4",
-    "ffmpeg-static": "^4.4.0",
-    "fluent-ffmpeg": "^2.1.2",
-    "isomorphic-unfetch": "^3.1.0",
-    "prism-media": "^1.2.6",
-    "random": "^3.0.6",
-    "spotify-url-info": "^3.1.4",
-    "spotify-web-api-node": "^5.0.2",
-    "ytdl-core": "^4.11.0",
-    "ytpl": "^2.2.3",
-    "ytsr": "^3.5.3"
-  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/helpvisa/oatmeal_bot.git"
+    "url": "git+https://github.com/veryLargeBiryani/mr-oats-revenge.git"
   },
-  "keywords": [
-    "oatmeal"
-  ],
+  "author": "Alex Hyams, Daniel Brackenbury",
+  "license": "ISC",
   "bugs": {
-    "url": "https://github.com/helpvisa/oatmeal_bot/issues"
+    "url": "https://github.com/veryLargeBiryani/mr-oats-revenge/issues"
   },
-  "homepage": "https://github.com/helpvisa/oatmeal_bot#readme"
+  "homepage": "https://github.com/veryLargeBiryani/mr-oats-revenge#readme",
+  "dependencies": {
+    "@discordjs/voice": "^0.14.0",
+    "discord.js": "^14.7.1",
+    "isomorphic-unfetch": "^4.0.2",
+    "spotify-url-info": "^3.2.3",
+    "ytdl-core": "^4.11.2",
+    "ytsr": "^3.8.0"
+  }
 }
