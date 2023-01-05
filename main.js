@@ -1,7 +1,9 @@
 // dependencies
 const { Client, GatewayIntentBits } = require('discord.js');
-const { joinVoiceChannel } = require('@discordjs/voice');
+const { joinVoiceChannel, createAudioPlayer, createAudioResource, NoSubscriberBehavior } = require('@discordjs/voice');
 const {token} = require('./config.json');
+const ytdl = require('ytdl-core');
+const fs = require('fs');
 // const {msgInterpret} = require('./msgInterpret.js');
 // const sessionEnd = require('./sessionEnd.js');
 
@@ -9,7 +11,8 @@ const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent
+        GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildVoiceStates
     ]
 });
 const queue = new Map(); // (guild.id) => {session@guild.id} //store music sessions (queue/connection) by server id.
@@ -32,12 +35,23 @@ client.on('messageCreate', async (message) =>{
     console.log(`${message.author.username} in ${message.channel.name} on ${message.guild.name} (${message.guildId}) said : ${message.content}`);
     message.guild.channels.fetch().then((channels)=>{
         // console.log(channels);
-        console.log(Array.from(channels.keys())[0]);
-        joinVoiceChannel({
-            channelId: Array.from(channels.keys())[0],
-            guildId: message.guildId,
-            adapterCreator: message.guild.voiceAdapterCreator
-        })
+        console.log(Array.from(channels.keys()));
+        const voice = {
+            connection: joinVoiceChannel({
+                channelId: Array.from(channels.keys())[14],
+                guildId: message.guildId,
+                adapterCreator: message.guild.voiceAdapterCreator
+            })
+        }
+        voice.player = createAudioPlayer({
+            behaviors: {
+                noSubscriber: NoSubscriberBehavior.Pause,
+            },
+        });
+        let song = createAudioResource(ytdl('https://www.youtube.com/watch?v=TwHsg2XO--c', {filter: "audioonly"}));
+        // let song = new AudioResource(`E:/programming/mr-oats-revenge/INTEGRITY.mp3`);
+        voice.player.play(song);
+        voice.connection.subscribe(voice.player);
     });
     //msgInterpret(message,queue);
 });

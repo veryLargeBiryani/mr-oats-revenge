@@ -17,10 +17,14 @@
   },
   "homepage": "https://github.com/veryLargeBiryani/mr-oats-revenge#readme",
   "dependencies": {
+    "@discordjs/opus": "^0.8.0",
     "@discordjs/voice": "^0.14.0",
     "discord.js": "^14.7.1",
+    "ffmpeg": "^0.0.4",
+    "ffmpeg-static": "^5.1.0",
     "isomorphic-unfetch": "^4.0.2",
     "spotify-url-info": "^3.2.3",
+    "tweetnacl": "^1.0.3",
     "ytdl-core": "^4.11.2",
     "ytsr": "^3.8.0"
   }

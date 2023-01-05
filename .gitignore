@@ -4,4 +4,4 @@ node_modules
 # ignore config
 config.json
 
-# ignore incomplete code
+*.mp3
