@@ -36,6 +36,7 @@ client.on('messageCreate', async (message) =>{
     message.guild.channels.fetch().then((channels)=>{
         // console.log(channels);
         console.log(Array.from(channels.keys()));
+        //connect to voice - https://discordjs.guide/voice/audio-player.html#playing-audio
         const voice = {
             connection: joinVoiceChannel({
                 channelId: Array.from(channels.keys())[14],
@@ -43,15 +44,17 @@ client.on('messageCreate', async (message) =>{
                 adapterCreator: message.guild.voiceAdapterCreator
             })
         }
+        //create music station
         voice.player = createAudioPlayer({
             behaviors: {
                 noSubscriber: NoSubscriberBehavior.Pause,
             },
         });
-        let song = createAudioResource(ytdl('https://www.youtube.com/watch?v=TwHsg2XO--c', {filter: "audioonly"}));
-        // let song = new AudioResource(`E:/programming/mr-oats-revenge/INTEGRITY.mp3`);
-        voice.player.play(song);
         voice.connection.subscribe(voice.player);
+        //import song
+        let song = createAudioResource(ytdl('https://www.youtube.com/watch?v=TwHsg2XO--c', {filter: "audioonly"}));
+        //play the song on the player
+        voice.player.play(song);
     });
     //msgInterpret(message,queue);
 });
