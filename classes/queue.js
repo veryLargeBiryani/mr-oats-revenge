@@ -1,4 +1,4 @@
-class Queue {
+module.exports = class Queue {
     constructor(url){
         this.contents = url //(insert ytpl/ytdl magit here);
     }
