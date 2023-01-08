@@ -5,8 +5,8 @@ module.exports = class Queue {
     async skip(n=1){//skips next (n) songs in the queue
 
     }
-    async add(song,position){//position defaults to last
-
+    async add(songs,position=this.contents.length){//position defaults to last
+        this.contents.splice(position,0,...songs); //https://stackoverflow.com/questions/1348178/a-better-way-to-splice-an-array-into-an-array-in-javascript
     }
     async rm(position){//position defaults to last
 
