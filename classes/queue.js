@@ -1,17 +1,20 @@
 module.exports = class Queue {
-    constructor(url){
-        this.contents = url //(insert ytpl/ytdl magit here);
+    constructor(songs){
+        this.contents = songs;
     }
-    add(song,position){//position defaults to last
+    async skip(n=1){//skips next (n) songs in the queue
 
     }
-    rm(position){//position defaults to last
+    async add(song,position){//position defaults to last
 
     }
-    report(){//return list of what's in the queue
+    async rm(position){//position defaults to last
 
     }
-    clear(){//empty the queue
+    async report(){//return list of what's in the queue
+
+    }
+    async clear(){//empty the queue
 
     }
 }

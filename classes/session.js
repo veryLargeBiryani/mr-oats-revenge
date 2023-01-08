@@ -2,8 +2,8 @@
 const { joinVoiceChannel, createAudioPlayer, NoSubscriberBehavior } = require('@discordjs/voice');
 
 module.exports = class Session {
-    constructor(guild,channelId,queue=[]){
-        this.queue = queue; //this will be an instance of a queue class that has manipulation methods
+    constructor(guild,channelId,queue){
+        this.queue = queue; //instance of a queue class that has manipulation methods
         this.connection = joinVoiceChannel({
             channelId: channelId,
             guildId: guild.id,
@@ -15,17 +15,22 @@ module.exports = class Session {
             },
         });
         this.connection.subscribe(this.player); // subcribe the connection to the audio player so it can be heard
+        this.player.play(queue.contents[0].resource); //play first song in the new instantiated queue
+
+        // this.player.on( // listen for songs ending to play next song
+
+        // );
     }
     //send messages back to the discord server
-    msgSend(){
+    async msgSend(){
 
     }
     //send messages to console
-    log(){
+    async log(){
 
     }
     //disconnect the bot from voice and/or clear the queue
-    close(){
+    async close(){
 
     }
 }

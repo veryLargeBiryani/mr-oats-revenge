@@ -13,6 +13,7 @@ const client = new Client({
     ]
 });
 const sessionDir = new Map(); // (guild.id) => Session
+let servers; //map the guilds mr oats is invited to
 
 // log the bot into the correct discord dev bot using the token in config.json
 client.login(token);
@@ -20,19 +21,15 @@ client.login(token);
 client.once('ready', () => {
     console.log('--Mr. Oats is Online--');
     console.log('----------------------');
-    //test code - log all servers mr oats is connected to
+    //put mr oat's servers in memory
     client.guilds.fetch().then( (guilds) =>{
-        console.log(guilds);
+        servers = guilds;
     });
 });
 
 client.on('messageCreate', async (message) =>{
-    // log the received message
+    //test code - log the received message
     console.log(`${message.author.username} in ${message.channel.name} on ${message.guild.name} (${message.guildId}) said : ${message.content}`);
-    //test code - log the channels on the server the bot is currently on
-    message.guild.channels.fetch().then((channels)=>{
-        console.log(Array.from(channels.keys()));
-    });
     //execute bot core function - create session if needed and apply command to the session
     execute(message.guild,sessionDir,message);
 });
