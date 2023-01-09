@@ -1,5 +1,7 @@
 //dependencies
 const { joinVoiceChannel, createAudioPlayer, NoSubscriberBehavior, AudioPlayerStatus  } = require('@discordjs/voice');
+// const EventEmitter = require('events');
+// const songQueued = new EventEmitter();
 
 module.exports = class Session {
     constructor(guild,channelId,queue){
@@ -16,17 +18,21 @@ module.exports = class Session {
         //manage Audio player - switch songs, handle errors - https://discordjs.guide/voice/audio-player.html#life-cycle
         this.player.on(AudioPlayerStatus.Idle, () => {
             this.queue.contents.shift();
-            if (!this.queue.contents.length) this.connection.disconnect(); //queue is over
-            //need to add a listener to see when the queue changed so if the bot disconnects but a new song is added he can rejoin
-            this.player.play(queue.contents[0].resource);
+            if (!this.queue.contents.length) this.connection.disconnect(); //queue is over - need queue listener to reconnect later
+            else this.player.play(queue.contents[0].resource);
         });
 
-        this.player.on('error', error => {
+        this.player.on('error', (error) => {
             console.log(error);
             this.queue.contents.shift();
-            if (!this.queue.contents.length) this.connection.disconnect(); //queue is over
-            this.player.play(queue.contents[0].resource);
+            if (!this.queue.contents.length) this.connection.disconnect(); //queue is over - need queue listener to reconnect later
+            else this.player.play(queue.contents[0].resource);
         });
+        //listener to see when the queue changed so if the bot disconnects but a new song is added he can rejoin
+        // songQueued.on('songQueued',()=>{
+        //     console.log('new song queued!');
+        //     this.connection.rejoin();
+        // });
     }
     //send messages back to the discord server
     async msgSend(){
