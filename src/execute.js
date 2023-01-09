@@ -1,7 +1,7 @@
 //dependencies
-const Session = require('../classes/session');
-const Queue = require('../classes/queue');
-const Song = require('../classes/song');
+const Session = require('./classes/session');
+const Queue = require('./classes/queue');
+const Song = require('./classes/song');
 
 //returns a session to be stored in the bot's directory
 module.exports = async (guild,sessionDir,message)=>{
