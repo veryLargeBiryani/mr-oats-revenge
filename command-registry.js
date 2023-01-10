@@ -3,16 +3,17 @@
 
 //dependencies
 const fs = require('fs');
+const path = require('path');
 const { REST, Routes } = require('discord.js');
 const { token, test_guild_id, client_id } = require('./config.json');
 
 //get command files from the commands directory
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+const commandFiles = fs.readdirSync(path.join(__dirname , 'src', 'commands')).filter(file => file.endsWith('.js'));
 
 //get command data as json for PUT request
 const commands = [];
 for (const file of commandFiles) {
-	const command = require(`./commands/${file}`);
+	const command = require(path.join(__dirname, 'src', 'commands', file));
 	commands.push(command.data.toJSON());
 }
 
