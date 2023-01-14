@@ -1,8 +1,6 @@
 //dependencies
 const { SlashCommandBuilder } = require('discord.js');
 const Session = require('../classes/session');
-const Queue = require('../classes/queue');
-const Song = require('../classes/song');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -16,47 +14,57 @@ module.exports = {
 						.setName('query')
 						.setDescription('Put your search terms here')
 				)
+				.addStringOption(option=> //user can choose where the song goes in the queue
+					option.setRequired(false)
+						.setName('position')
+						.setDescription('Choose when the song will be queued')
+				)
 		)
 		.addSubcommand(subcommand=> //url gets own subcommand for interface simplicity
 			subcommand.setName('by-url') 
 				.setDescription('Add a song or playlist using a link')
-				.addStringOption(option=> //user prompted to queue playlist or song
-					option.setRequired(true)
-						.setName('type')
-						.setDescription('Playlist or Song')
-						.addChoices( //can only pick from these 2 choices
-							{name:'playlist',value:'playlist'},
-							{name:'song',value: 'song'}
-						)
-				)
+				// .addStringOption(option=> //user prompted to queue playlist or song
+				// 	option.setRequired(true)
+				// 		.setName('type')
+				// 		.setDescription('Playlist or Song')
+				// 		.addChoices( //can only pick from these 2 choices
+				// 			{name:'playlist',value:'playlist'},
+				// 			{name:'song',value: 'song'}
+				// 		)
+				// )
 				.addStringOption(option=> //user prompted to provide a url
 					option.setRequired(true)
 						.setName('url')
 						.setDescription('The link you want to play from')
 				)
+				.addStringOption(option=> //user can choose where the song goes in the queue
+					option.setRequired(false)
+						.setName('position')
+						.setDescription('Choose when the song will be queued')
+				)
 		),
 	async execute(interaction,sessionDir) {
 		//harvest command variables
-		const params = {type:null,url:null,query:null};
-		switch(interaction.options._subcommand){
+		const command = {
+			mode: interaction.options._subcommand,
+			pos: interaction.options._hoistedOptions[1]?.value
+		};
+		switch (interaction.options._subcommand){
 			case 'by-url':
-				params.type = interaction.options._hoistedOptions[0].value;
-				params.url = interaction.options._hoistedOptions[1].value;
+				command.url = interaction.options._hoistedOptions[0].value;
 				break;
 			case 'by-search':
-				params.query = interaction.options._hoistedOptions[0].value;
+				command.query = interaction.options._hoistedOptions[0].value;
 				break;
 		}
 		//create a new session if needed
 		const session = sessionDir.get(interaction.guild.id);
 		if (!session){
-			sessionDir.set(interaction.guild.id, new Session(interaction.guild, interaction.member.voice.channelId, new Queue([new Song({url:params.url,query:params.query})])));
+			sessionDir.set(interaction.guild.id, new Session(interaction.guild, interaction.member.voice.channelId, command));
 			await interaction.reply(`This command was run by ${interaction.user.username}, who joined on ${interaction.member.joinedAt}.`);  
 			return;
-		};
-		//if a session exists already we just process the command
-		session.queue.add([new Song({url:params.url,query:params.query})]);
-
+		} else session.queue.add(command); //if a session exists already we just process the command
+		
 		// interaction.user is the object representing the User who ran the command
 		// interaction.member is the GuildMember object, which represents the user in the specific guild
 		await interaction.reply(`This command was run by ${interaction.user.username}, who joined on ${interaction.member.joinedAt}.`);   
