@@ -6,22 +6,25 @@ module.exports = class Queue {
         this.contents = [];
         this.add(command);
     }
-    async skip(n=1){//skips next (n) songs in the queue
-
-    }
-    async add(command,position=this.contents.length){ //position defaults to last
-        if (command.pos) position = command.pos; //initialize position if requested by the user
-        let songs = []; //initialize list of songs to add to queue
+    add(command,position=this.contents.length){ //position defaults to last
+        if (command.pos) position = command.pos; //set position if requested by the user
         //queue a playlist
         if (command?.url.search(/(\/playlist)|(\/album\/)|(&list=)/g)){
-            let playlist = await ytpl(command.url);
-            for (const i in playlist.items){
-                songs.push(new Song({url:playlist.items[i].shortUrl}));
-            }
-        } else { //queue a song
-            songs.push(new Song(command));
+            ytpl(command.url).then((playlist)=>{
+                let songs = []; //initialize list of songs to add to queue
+                for (const i in playlist.items) {
+                    songs.push(new Song({url: playlist.items[i].shortUrl}));
+                }
+                this.contents.splice(position,0,...songs);
+            },(error)=>{
+                console.log(error);
+            })
+        } else { //queue a song 
+            this.contents.splice(position,0,new Song(command));
         }
-        this.contents.splice(position,0,...songs); //https://stackoverflow.com/questions/1348178/a-better-way-to-splice-an-array-into-an-array-in-javascript
+    }
+    async skip(n=1){//skips next (n) songs in the queue
+
     }
     async rm(position){//position defaults to last
 
