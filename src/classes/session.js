@@ -3,12 +3,12 @@ const { joinVoiceChannel, createAudioPlayer, NoSubscriberBehavior, AudioPlayerSt
 const Queue = require('./queue');
 
 module.exports = class Session {
-    constructor(guild,channelId,command){
-        this.queue = new Queue(command); 
+    constructor(queue,command){
+        this.queue = queue; 
         this.connection = joinVoiceChannel({
-            channelId: channelId,
-            guildId: guild.id,
-            adapterCreator: guild.voiceAdapterCreator
+            channelId: command.channel,
+            guildId: command.guild.id,
+            adapterCreator: command.guild.voiceAdapterCreator
         })
         this.player = createAudioPlayer({behaviors: {noSubscriber: NoSubscriberBehavior.Pause}});
         this.connection.subscribe(this.player); // subcribe the connection to the audio player so it can be heard

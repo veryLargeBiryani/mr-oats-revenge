@@ -1,6 +1,7 @@
 //dependencies
 const { SlashCommandBuilder } = require('discord.js');
 const Session = require('../classes/session');
+const Queue = require('../classes/queue');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -44,10 +45,12 @@ module.exports = {
 				)
 		),
 	async execute(interaction,sessionDir) {
-		//harvest command variables
+		//simplify interaction properties (only the ones we're going to use)
 		const command = {
+			guild: interaction.guild,
+			channel: interaction.member.voice.channelId,
 			mode: interaction.options._subcommand,
-			pos: interaction.options._hoistedOptions[1]?.value
+			pos: interaction.options._hoistedOptions[1]?.value			
 		};
 		switch (interaction.options._subcommand){
 			case 'by-url':
@@ -58,15 +61,15 @@ module.exports = {
 				break;
 		}
 		//create a new session if needed
-		const session = sessionDir.get(interaction.guild.id);
+		const session = sessionDir.get(command.guild.id);
 		if (!session){
-			sessionDir.set(interaction.guild.id, new Session(interaction.guild, interaction.member.voice.channelId, command));
-			await interaction.reply(`This command was run by ${interaction.user.username}, who joined on ${interaction.member.joinedAt}.`);  
+			sessionDir.set(command.guild.id, new Session(new Queue(command), command));
+			await interaction.reply(`This command was run by ${interaction.user.username}, who joined on ${interaction.member.joinedAt}.`);  //test code
 			return;
 		} else session.queue.add(command); //if a session exists already we just process the command
 		
 		// interaction.user is the object representing the User who ran the command
 		// interaction.member is the GuildMember object, which represents the user in the specific guild
-		await interaction.reply(`This command was run by ${interaction.user.username}, who joined on ${interaction.member.joinedAt}.`);   
+		await interaction.reply(`This command was run by ${interaction.user.username}, who joined on ${interaction.member.joinedAt}.`);   //test code
 	}
 };
