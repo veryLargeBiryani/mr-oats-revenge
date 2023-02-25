@@ -63,13 +63,11 @@ module.exports = {
 		//create a new session if needed
 		const session = sessionDir.get(command.guild.id);
 		if (!session){
-			sessionDir.set(command.guild.id, new Session(new Queue(command), command));
-			await interaction.reply(`This command was run by ${interaction.user.username}, who joined on ${interaction.member.joinedAt}.`);  //test code
+			sessionDir.set(command.guild.id, new Session(command));
+			//await interaction.reply(`This command was run by ${interaction.user.username}, who joined on ${interaction.member.joinedAt}.`);  //test code
 			return;
 		} else session.queue.add(command); //if a session exists already we just process the command
-		
-		// interaction.user is the object representing the User who ran the command
-		// interaction.member is the GuildMember object, which represents the user in the specific guild
-		await interaction.reply(`This command was run by ${interaction.user.username}, who joined on ${interaction.member.joinedAt}.`);   //test code
+		interaction.reply(`${interaction.member} queued up a song! ${command.url}`);
+		//await interaction.reply(`This command was run by ${interaction.user.username}, who joined on ${interaction.member.joinedAt}.`);   //test code
 	}
 };

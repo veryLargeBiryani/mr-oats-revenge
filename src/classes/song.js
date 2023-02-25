@@ -1,5 +1,5 @@
 //dependencies
-const ytdl = require('ytdl-core');
+const ytdl = require('ytdl-core'); //should change to ytdl-core-discord down the line for performance
 const { createAudioResource } = require('@discordjs/voice');
 const ytsr = require('ytsr');
 
