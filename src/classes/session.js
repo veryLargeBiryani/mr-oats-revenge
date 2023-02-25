@@ -3,13 +3,17 @@ const { joinVoiceChannel, createAudioPlayer, NoSubscriberBehavior, AudioPlayerSt
 const Queue = require('./queue');
 
 module.exports = class Session {
-    constructor(command){
-        this.queue = new Queue(command); 
+    constructor(){
+    }
+    async init(command){
+        this.queue = new Queue(); 
+        await this.queue.init(command);
         this.connection = joinVoiceChannel({
             channelId: command.channel,
             guildId: command.guild.id,
             adapterCreator: command.guild.voiceAdapterCreator
         })
+        await this.queue.contents[0].getStream();
         this.player = createAudioPlayer({behaviors: {noSubscriber: NoSubscriberBehavior.Pause}});
         this.connection.subscribe(this.player); // subcribe the connection to the audio player so it can be heard
         this.player.play(this.queue.contents[0].resource); //play first song in the new instantiated queue
@@ -17,6 +21,7 @@ module.exports = class Session {
         //manage Audio player - switch songs, handle errors - https://discordjs.guide/voice/audio-player.html#life-cycle
         this.player.on(AudioPlayerStatus.Idle, () => {
             this.queue.contents.shift();
+            await this.queue.contents[0].getStream();
             if (!this.queue.contents.length) this.connection.disconnect(); //queue is over - need queue listener to reconnect later
             else this.player.play(this.queue.contents[0].resource);
         });
@@ -24,6 +29,7 @@ module.exports = class Session {
         this.player.on('error', (error) => {
             console.log(error);
             this.queue.contents.shift();
+            await this.queue.contents[0].getStream();
             if (!this.queue.contents.length) this.connection.disconnect(); //queue is over - need queue listener to reconnect later
             else this.player.play(this.queue.contents[0].resource);
         });

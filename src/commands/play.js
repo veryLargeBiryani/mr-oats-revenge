@@ -1,7 +1,6 @@
 //dependencies
 const { SlashCommandBuilder } = require('discord.js');
 const Session = require('../classes/session');
-const Queue = require('../classes/queue');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -61,9 +60,11 @@ module.exports = {
 				break;
 		}
 		//create a new session if needed
-		const session = sessionDir.get(command.guild.id);
+		let session = sessionDir.get(command.guild.id);
 		if (!session){
-			sessionDir.set(command.guild.id, new Session(command));
+			session = new Session();
+			await session.init(command);
+			sessionDir.set(command.guild.id, session);
 			//await interaction.reply(`This command was run by ${interaction.user.username}, who joined on ${interaction.member.joinedAt}.`);  //test code
 			return;
 		} else session.queue.add(command); //if a session exists already we just process the command

@@ -2,15 +2,17 @@ const ytpl = require('ytpl');
 const Song = require('./song');
 
 module.exports = class Queue {
-    constructor(command){
-        this.contents = [];
-        this.add(command);
+    constructor(){
     }
-    add(command,position=this.contents.length){ //position defaults to last
+    async init (command){
+        this.contents = [];
+        await this.add(command);
+    }
+    async add(command,position=this.contents.length){ //position defaults to last
         if (command.pos) position = command.pos; //set position if requested by the user
         //queue a playlist
         if (command?.url.search(/(\/playlist)|(\/album\/)|(&list=)/g) > 0){
-            // ytpl(command.url);
+            let playlist = await ytpl(command.url);
             let songs = [];
                 for (const i in playlist.items){
                     songs.push(new Song({url: playlist.items[i].shortUrl}));
