@@ -19,19 +19,24 @@ module.exports = class Session {
         this.player.play(this.queue.contents[0].resource); //play first song in the new instantiated queue
 
         //manage Audio player - switch songs, handle errors - https://discordjs.guide/voice/audio-player.html#life-cycle
-        this.player.on(AudioPlayerStatus.Idle, () => {
+        this.player.on(AudioPlayerStatus.Idle, async () => {
+            console.log('Song ended');
             this.queue.contents.shift();
-            await this.queue.contents[0].getStream();
             if (!this.queue.contents.length) this.connection.disconnect(); //queue is over - need queue listener to reconnect later
-            else this.player.play(this.queue.contents[0].resource);
+            else {
+                await this.queue.contents[0].getStream(); 
+                this.player.play(this.queue.contents[0].resource);
+            }
         });
 
-        this.player.on('error', (error) => {
+        this.player.on('error', async (error) => {
             console.log(error);
             this.queue.contents.shift();
-            await this.queue.contents[0].getStream();
             if (!this.queue.contents.length) this.connection.disconnect(); //queue is over - need queue listener to reconnect later
-            else this.player.play(this.queue.contents[0].resource);
+            else {
+                await this.queue.contents[0].getStream(); 
+                this.player.play(this.queue.contents[0].resource);
+            }
         });
     }
     //send messages back to the discord server
