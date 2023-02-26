@@ -65,7 +65,6 @@ module.exports = {
 			session = new Session();
 			await session.init(command);
 			sessionDir.set(command.guild.id, session);
-			return;
 		} else { //if a session exists already we just process the command
 			await session.queue.add(command);
 			if (session.player.state.status == 'idle'){ //play the song if nothing is playing

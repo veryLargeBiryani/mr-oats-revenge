@@ -15,6 +15,6 @@ module.exports = {
         let skipNum = interaction.options._hoistedOptions[0]?.value;
         if (!skipNum) sessionDir.get(interaction.guild.id).skip();
         else sessionDir.get(interaction.guild.id).skip(skipNum);
-        interaction.reply(`${interaction.member} skipped! - sucks For whoever queued that up.`);
+        return `${interaction.member} skipped! - sucks For whoever queued that up.`;
 	}
 };

@@ -31,8 +31,11 @@ client.on(Events.InteractionCreate, async interaction => {
 		console.log(`[ERROR] No command matching ${interaction.commandName} was found.`);
 		return;
 	}
-	let res = await command.execute(interaction,sessionDir);
-	//reply(interaction,res);
+	command.execute(interaction,sessionDir).then((res)=>{
+		reply(interaction,res);
+	},(err)=>{
+		reply(interaction,err);
+	})
 });
 
 // kill session if bot is disconnected

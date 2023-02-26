@@ -7,6 +7,6 @@ module.exports = {
 		.setDescription("See what's queued!"),
 	async execute(interaction,sessionDir) {
         let session = sessionDir.get(interaction.guild.id);
-        interaction.reply(session.queue.report());
+        return session.queue.report();
 	}
 };
