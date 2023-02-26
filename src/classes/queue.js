@@ -10,17 +10,20 @@ module.exports = class Queue {
     }
     async add(command,position=this.contents.length){ //position defaults to last
         if (command.pos) position = command.pos; //set position if requested by the user
-        //queue a playlist
-        if (command?.url.search(/(\/playlist)|(\/album\/)|(&list=)/g) > 0){
-            let playlist = await ytpl(command.url); //doesn't support mixes, need error catching - ex/ https://www.youtube.com/watch?v=xGBriJaqLqI&list=RDMM&index=19
+        if (command.url && command?.url?.search(/(\/playlist)|(\/album\/)|(&list=)/g) > 0){ //queue playlist
+            let playlist = await ytpl(command.url);
             let songs = [];
                 for (const i in playlist.items){
                     if (i > 20) break; //playlist length limit
-                    songs.push(new Song({url: playlist.items[i].shortUrl}));
+                    let song = new Song();
+                    await song.init({url: playlist.items[i].shortUrl});
+                    songs.push(song);
                 }
                 this.contents.splice(position,0,...songs);
-        } else { //queue a song 
-            this.contents.splice(position,0,new Song(command));
+        } else { //queue single song
+            let song = new Song();
+            await song.init(command);
+            this.contents.splice(position,0,song);
         }
     }
     async rm(position){//position defaults to last
@@ -32,7 +35,7 @@ module.exports = class Queue {
     report(){//return list of what's in the queue
         let queued = '';
         for (const song of this.contents){
-            queued+=`${song.url}\n`;
+            queued+=`${song.title}\n`;
         }
         return queued;
     }
