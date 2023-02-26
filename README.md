@@ -7,7 +7,7 @@ Mr. Oats needs the following intents enabled in the Discord Developer Portal:
         MESSAGE CONTENT INTENT
 
 Mr. Oats requires a config.json file in the root, containing a token for the bot that will be using the program.
-To run in development mode, this file should have a client ID ("Application ID" in Discord Developer Portal under "General Information") and a guild-id you want to register commands to.
+To run in development mode, this file should have a client ID ("Application ID" in Discord Developer Portal under "General Information") and a guild-id you want to register commands to. Commands must be registered before the bot can run in dev mode. Just run the command-registry.js script in the root.
 
 Example config.json:
 ```
@@ -18,5 +18,3 @@ Example config.json:
 }
 ```
 Mr. Oats uses play-dl to stream music from youtube or soundcloud. To avoid issues such as age restriction, you will need to [save cookies to your project folder](https://github.com/play-dl/play-dl/tree/main/instructions). 
-
-Commands must be registered before the bot can run. Just run the command-registry.js script in the root.
