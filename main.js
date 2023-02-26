@@ -26,12 +26,6 @@ client.once('ready', () => {
     });
 });
 
-//listen for server interactions
-client.on('messageCreate', async (message) =>{
-    //test code - log the received message
-    console.log(`${message.author.username} in ${message.channel.name} on ${message.guild.name} (${message.guildId}) said : ${message.content}`);
-});
-
 client.on(Events.InteractionCreate, async interaction => {
 	if (!interaction.isChatInputCommand()) return;
 	//get command from loader using command from interaction

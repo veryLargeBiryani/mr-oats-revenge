@@ -22,9 +22,6 @@ module.exports = class Queue {
             this.contents.splice(position,0,new Song(command));
         }
     }
-    async skip(n=1){//skips next (n) songs in the queue
-
-    }
     async rm(position){//position defaults to last
 
     }
