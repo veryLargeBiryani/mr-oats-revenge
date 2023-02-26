@@ -78,6 +78,7 @@ module.exports = {
 				session.player.play(session.queue.contents[0].resource); 
 			}
 		} 
-		interaction.reply(`${interaction.member} queued up a song! - ${command.url}`);
+		let res = 'Song Queued';
+		return res; //res for reply.js
 	}
 };

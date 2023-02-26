@@ -25,8 +25,15 @@ module.exports = class Queue {
     async rm(position){//position defaults to last
 
     }
-    async report(){//return list of what's in the queue
+    async nowPlaying(){
 
+    }
+    report(){//return list of what's in the queue
+        let queued = '';
+        for (const song of this.contents){
+            queued+=`${song.url}\n`;
+        }
+        return queued;
     }
     async clear(){//empty the queue
 
