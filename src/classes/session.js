@@ -1,38 +1,43 @@
 //dependencies
 const { joinVoiceChannel, createAudioPlayer, NoSubscriberBehavior, AudioPlayerStatus  } = require('@discordjs/voice');
-// const EventEmitter = require('events');
-// const songQueued = new EventEmitter();
+const Queue = require('./queue');
 
 module.exports = class Session {
-    constructor(guild,channelId,queue){
-        this.queue = queue; //instance of a queue class that has manipulation methods
+    constructor(){
+    }
+    async init(command){
+        this.queue = new Queue(); 
+        await this.queue.init(command);
         this.connection = joinVoiceChannel({
-            channelId: channelId,
-            guildId: guild.id,
-            adapterCreator: guild.voiceAdapterCreator
+            channelId: command.channel,
+            guildId: command.guild.id,
+            adapterCreator: command.guild.voiceAdapterCreator
         })
+        await this.queue.contents[0].getStream();
         this.player = createAudioPlayer({behaviors: {noSubscriber: NoSubscriberBehavior.Pause}});
         this.connection.subscribe(this.player); // subcribe the connection to the audio player so it can be heard
-        this.player.play(queue.contents[0].resource); //play first song in the new instantiated queue
+        this.player.play(this.queue.contents[0].resource); //play first song in the new instantiated queue
 
         //manage Audio player - switch songs, handle errors - https://discordjs.guide/voice/audio-player.html#life-cycle
-        this.player.on(AudioPlayerStatus.Idle, () => {
+        this.player.on(AudioPlayerStatus.Idle, async () => {
+            console.log('Song ended');
             this.queue.contents.shift();
             if (!this.queue.contents.length) this.connection.disconnect(); //queue is over - need queue listener to reconnect later
-            else this.player.play(queue.contents[0].resource);
+            else {
+                await this.queue.contents[0].getStream(); 
+                this.player.play(this.queue.contents[0].resource);
+            }
         });
 
-        this.player.on('error', (error) => {
+        this.player.on('error', async (error) => {
             console.log(error);
             this.queue.contents.shift();
             if (!this.queue.contents.length) this.connection.disconnect(); //queue is over - need queue listener to reconnect later
-            else this.player.play(queue.contents[0].resource);
+            else {
+                await this.queue.contents[0].getStream(); 
+                this.player.play(this.queue.contents[0].resource);
+            }
         });
-        //listener to see when the queue changed so if the bot disconnects but a new song is added he can rejoin
-        // songQueued.on('songQueued',()=>{
-        //     console.log('new song queued!');
-        //     this.connection.rejoin();
-        // });
     }
     //send messages back to the discord server
     async msgSend(){

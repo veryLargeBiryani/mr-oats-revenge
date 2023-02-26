@@ -36,6 +36,7 @@ client.on(Events.InteractionCreate, async interaction => {
 	if (!interaction.isChatInputCommand()) return;
 	//get command from loader using command from interaction
 	const command = interaction.client.commands.get(interaction.commandName);
+    // interaction.reply(`You queued a song!`);
 
 	if (!command) { //command isn't loaded
 		console.log(`[ERROR] No command matching ${interaction.commandName} was found.`);
