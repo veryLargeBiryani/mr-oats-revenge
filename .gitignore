@@ -5,3 +5,5 @@ node_modules
 config.json
 
 *.mp3
+#hide youtube cookie info
+.data
