@@ -1,7 +1,15 @@
 //dependencies
 const ytsr = require('ytsr');
-const ytdl = require('play-dl');
 const { createAudioResource  } = require('@discordjs/voice');
+
+const ytdl = require('play-dl');
+ytdl.getFreeClientID().then((clientID) => {
+    ytdl.setToken({
+      soundcloud : {
+          client_id : clientID
+      }
+    })
+})
 
 module.exports = class Song {
     constructor(command){
