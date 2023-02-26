@@ -18,3 +18,5 @@ Example config.json:
 }
 ```
 Mr. Oats uses play-dl to stream music from youtube or soundcloud. To avoid issues such as age restriction, you will need to [save cookies to your project folder](https://github.com/play-dl/play-dl/tree/main/instructions). 
+
+Commands must be registered before the bot can run. Just run the command-registry.js script in the root.
