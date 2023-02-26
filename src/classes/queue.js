@@ -15,6 +15,7 @@ module.exports = class Queue {
             let playlist = await ytpl(command.url); //doesn't support mixes, need error catching - ex/ https://www.youtube.com/watch?v=xGBriJaqLqI&list=RDMM&index=19
             let songs = [];
                 for (const i in playlist.items){
+                    if (i > 20) break; //playlist length limit
                     songs.push(new Song({url: playlist.items[i].shortUrl}));
                 }
                 this.contents.splice(position,0,...songs);
