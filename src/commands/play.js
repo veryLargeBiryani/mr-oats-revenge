@@ -65,16 +65,19 @@ module.exports = {
 			session = new Session();
 			await session.init(command);
 			sessionDir.set(command.guild.id, session);
-			//await interaction.reply(`This command was run by ${interaction.user.username}, who joined on ${interaction.member.joinedAt}.`);  //test code
 			return;
 		} else { //if a session exists already we just process the command
 			await session.queue.add(command);
-			if (session.player.state == 'idle'){
-				session.connection.connect();
-				session.player.play(session.queue.contents[0].resource); //play the song if nothing is playing
+			if (session.player.state.status == 'idle'){ //play the song if nothing is playing
+				session.connection.rejoin({
+					channelId: command.channel,
+					guildId: command.guild.id
+				});
+				session.connection.subscribe(session.player);
+				await session.queue.contents[0].getStream(); 
+				session.player.play(session.queue.contents[0].resource); 
 			}
 		} 
-		interaction.reply(`${interaction.member} queued up a song! ${command.url}`);
-		//await interaction.reply(`This command was run by ${interaction.user.username}, who joined on ${interaction.member.joinedAt}.`);   //test code
+		interaction.reply(`${interaction.member} queued up a song! - ${command.url}`);
 	}
 };
