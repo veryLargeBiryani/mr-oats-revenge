@@ -34,7 +34,7 @@ client.on(Events.InteractionCreate, async interaction => {
 	command.execute(interaction,sessionDir).then((res)=>{
 		reply(interaction,res);
 	},(err)=>{
-		reply(interaction,err.message);
+		reply(interaction,err.stack);
 	})
 });
 

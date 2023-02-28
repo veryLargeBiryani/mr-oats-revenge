@@ -16,7 +16,7 @@ module.exports = class Queue {
             await song.init(command);
             this.contents.splice(position,0,song);
         } else {
-            let songs = getPlaylist(command);
+            let songs = await getPlaylist(command);
             this.contents.splice(position,0,...songs);
         }
     }

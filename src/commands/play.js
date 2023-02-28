@@ -62,6 +62,7 @@ module.exports = {
 				break;
 			case 'by-search':
 				command.query = interaction.options._hoistedOptions[0].value;
+				command.source = 'search';
 				break;
 		}
 
