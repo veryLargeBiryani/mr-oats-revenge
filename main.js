@@ -25,6 +25,7 @@ client.once('ready', () => {
 //Listen for commands from discord
 client.on(Events.InteractionCreate, async interaction => {
 	if (!interaction.isChatInputCommand()) return;
+	await interaction.deferReply(); //give mr oats time to think
 	const command = interaction.client.commands.get(interaction.commandName);
 	if (!command) { //command isn't loaded
 		reply(interaction,404);

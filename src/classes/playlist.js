@@ -16,8 +16,8 @@ module.exports = async (command)=>{
     let playlist;
     switch(command.source){
         case 'youtube':
-            playlist = await ytpl(command.url).items;
-            for (const i in playlist){
+            playlist = await ytpl(command.url);
+            for (const i in playlist.items){
                 if (i > 20) break; //playlist length limit
                 let song = new Song();
                 await song.init({source: command.source, url: playlist.items[i].shortUrl});

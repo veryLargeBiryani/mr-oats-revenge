@@ -1,3 +1,3 @@
 module.exports = (interaction,res)=>{
-    interaction.reply(res);
+    interaction.followUp(res);
 }
