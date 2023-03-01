@@ -12,7 +12,7 @@ To run in development mode, this file should have a client ID ("Application ID" 
 Example config.json:
 ```
 {
-  "token": "<your-token>"
+  "token": "<your-token>",
   "client_id": "<your-client-id>",
   "test_guild_id": "<your-guild-id>"
 }
