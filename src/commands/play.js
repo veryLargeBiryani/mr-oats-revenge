@@ -44,28 +44,34 @@ module.exports = {
 				)
 		),
 	async execute(interaction,sessionDir) {
-		//simplify interaction properties (only the ones we're going to use)
+		//simplify interaction properties (get only the ones we're going to use)
 		const command = {
 			guild: interaction.guild,
 			channel: interaction.member.voice.channelId,
 			mode: interaction.options._subcommand,
-			pos: interaction.options._hoistedOptions[1]?.value			
+			pos: interaction.options._hoistedOptions[1]?.value,
+			source: 'youtube',	//youtube by default
+			isPlaylist: false
 		};
 		switch (interaction.options._subcommand){
 			case 'by-url':
 				command.url = interaction.options._hoistedOptions[0].value;
+				if (command.url.includes('open.spotify')) command.source = 'spotify';
+				if (command.url.includes('soundcloud')) command.source = 'soundcloud';
+				if (command.url.search(/(\/playlist)|(\/album\/)|(&list=)|(\/sets\/)/g) > 0) command.isPlaylist = true;
 				break;
 			case 'by-search':
 				command.query = interaction.options._hoistedOptions[0].value;
+				command.source = 'search';
 				break;
 		}
+
 		//create a new session if needed
 		let session = sessionDir.get(command.guild.id);
 		if (!session){
 			session = new Session();
 			await session.init(command);
 			sessionDir.set(command.guild.id, session);
-			return;
 		} else { //if a session exists already we just process the command
 			await session.queue.add(command);
 			if (session.player.state.status == 'idle'){ //play the song if nothing is playing
@@ -78,6 +84,7 @@ module.exports = {
 				session.player.play(session.queue.contents[0].resource); 
 			}
 		} 
-		interaction.reply(`${interaction.member} queued up a song! - ${command.url}`);
+		let res = 'Song Queued';
+		return res; //res for reply.js
 	}
 };

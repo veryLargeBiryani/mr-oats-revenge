@@ -2,8 +2,9 @@
 const { Client, GatewayIntentBits, Events } = require('discord.js');
 const { token } = require('./config.json');
 const commandLib = require('./src/command-loader');
+const reply = require('./src/responses/reply');
 
-//connect to discord and define bot permissions
+//define bot permissions
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -13,42 +14,29 @@ const client = new Client({
     ]
 });
 
-//Initialize Oats
+//Initialize
 client.commands = commandLib(); //import commands via command loader
-const sessionDir = new Map(); // map of sessions (guild.id) => {Session}
-let servers; //map of guilds (guild.id) => {Guild}
+const sessionDir = new Map(); // initialize map of sessions (guild.id) => {Session}
 client.login(token);
 client.once('ready', () => {
     console.log('--Mr. Oats is Online--');
-    console.log('----------------------');
-    client.guilds.fetch().then( (guilds) =>{
-        servers = guilds; //put mr oat's servers in memory
-    });
 });
 
-//listen for server interactions
-client.on('messageCreate', async (message) =>{
-    //test code - log the received message
-    console.log(`${message.author.username} in ${message.channel.name} on ${message.guild.name} (${message.guildId}) said : ${message.content}`);
-});
-
+//Listen for commands from discord
 client.on(Events.InteractionCreate, async interaction => {
 	if (!interaction.isChatInputCommand()) return;
-	//get command from loader using command from interaction
+	await interaction.deferReply(); //give mr oats time to think
 	const command = interaction.client.commands.get(interaction.commandName);
-    // interaction.reply(`You queued a song!`);
-
 	if (!command) { //command isn't loaded
+		reply(interaction,404);
 		console.log(`[ERROR] No command matching ${interaction.commandName} was found.`);
 		return;
 	}
-
-	try {
-		await command.execute(interaction,sessionDir); //execute the command if it is loaded
-	} catch (error) {
-		console.log(error);
-		await interaction.reply({ content: 'Could not execute command!', ephemeral: true });
-	}
+	command.execute(interaction,sessionDir).then((res)=>{
+		reply(interaction,res);
+	},(err)=>{
+		reply(interaction,err.stack);
+	})
 });
 
 // kill session if bot is disconnected

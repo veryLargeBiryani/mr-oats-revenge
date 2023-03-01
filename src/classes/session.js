@@ -20,7 +20,6 @@ module.exports = class Session {
 
         //manage Audio player - switch songs, handle errors - https://discordjs.guide/voice/audio-player.html#life-cycle
         this.player.on(AudioPlayerStatus.Idle, async () => {
-            console.log('Song ended');
             this.queue.contents.shift();
             if (!this.queue.contents.length) this.connection.disconnect(); //queue is over - need queue listener to reconnect later
             else {
@@ -39,15 +38,10 @@ module.exports = class Session {
             }
         });
     }
-    //send messages back to the discord server
-    async msgSend(){
-
+    async skip(n=1){
+        if (n>1) this.queue.contents.splice(1,n-1); //delete n-1 upcoming songs (don't delete current song)
+        this.player.stop(); //destroy currently playing resource, and send player into idle state to trigger queue rotation
     }
-    //send messages to console
-    async log(){
-
-    }
-    //disconnect the bot from voice and/or clear the queue
     async close(){
 
     }

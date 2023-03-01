@@ -1,5 +1,5 @@
-const ytpl = require('ytpl');
 const Song = require('./song');
+const getPlaylist = require('./playlist');
 
 module.exports = class Queue {
     constructor(){
@@ -10,27 +10,33 @@ module.exports = class Queue {
     }
     async add(command,position=this.contents.length){ //position defaults to last
         if (command.pos) position = command.pos; //set position if requested by the user
-        //queue a playlist
-        if (command?.url.search(/(\/playlist)|(\/album\/)|(&list=)/g) > 0){
-            let playlist = await ytpl(command.url); //doesn't support mixes, need error catching - ex/ https://www.youtube.com/watch?v=xGBriJaqLqI&list=RDMM&index=19
-            let songs = [];
-                for (const i in playlist.items){
-                    songs.push(new Song({url: playlist.items[i].shortUrl}));
-                }
-                this.contents.splice(position,0,...songs);
-        } else { //queue a song 
-            this.contents.splice(position,0,new Song(command));
+
+        if (!command.isPlaylist){ //singles
+            let song = new Song();
+            await song.init(command);
+            this.contents.splice(position,0,song);
+        } else {
+            let songs = await getPlaylist(command);
+            this.contents.splice(position,0,...songs);
         }
     }
-    async skip(n=1){//skips next (n) songs in the queue
 
-    }
     async rm(position){//position defaults to last
 
     }
-    async report(){//return list of what's in the queue
+
+    async nowPlaying(){
 
     }
+
+    report(){//return list of what's in the queue
+        let queued = '';
+        for (const song of this.contents){
+            queued+=`${song.title}\n`;
+        }
+        return queued;
+    }
+
     async clear(){//empty the queue
 
     }
