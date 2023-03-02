@@ -1,5 +1,5 @@
 # inherit from node version 17 package
-FROM node:17.0.0
+FROM node:16.16.0
 # establish a working directory
 WORKDIR /oats
 # copy our package files for dependencies
