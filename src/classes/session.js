@@ -6,6 +6,8 @@ module.exports = class Session {
     constructor(){
     }
     async init(command){
+        this.guild = command.guild; //guild object
+        this.messageFeed = command.textChannel; //text channel id num
         this.queue = new Queue(); 
         await this.queue.init(command);
         this.connection = joinVoiceChannel({
