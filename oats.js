@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const app = express() , PORT = 3000;
 const { Client, GatewayIntentBits, Events } = require('discord.js');
 const { token } = require('./config.json');
@@ -60,3 +61,6 @@ app.get('/:session/:command', async (req,res)=>{
 		announce(err.stack);
 	})
 });
+
+//mr oats homepage
+app.get('/', async (req,res) => res.sendFile(path.join(__dirname,'public','index.html')));
