@@ -1,8 +1,8 @@
 const express = require('express');
 const path = require('path');
-const app = express() , PORT = 3001;
+const app = express();
 const { Client, GatewayIntentBits, Events } = require('discord.js');
-const { token } = require('./config.json');
+const { token, PORT } = require('../config.json');
 const commandLib = require('./src/utils/command-loader');
 const reply = require('./src/responses/reply');
 const parser = require('./src/utils/command-parser');
