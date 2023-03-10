@@ -1,0 +1,1 @@
+(()=>{"use strict";const e=document.createElement("button");e.addEventListener("click",(function(){let e=document.querySelector('input[name="command"]:checked').value;console.log(e)})),e.textContent="Submit",document.body.appendChild(e)})();
