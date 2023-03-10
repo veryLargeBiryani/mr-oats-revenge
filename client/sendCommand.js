@@ -5,7 +5,7 @@ function sendCommand(){
     let voiceChannel = 143574023417233408;
     let author = 138151052099846144;
     let url = document.getElementById("url").value
-    window.fetch(`localhost:3001/api/${guild}/${cmd}?` + new URLSearchParams({
+    fetch(`http://localhost:3001/api/${guild}/${cmd}?` + new URLSearchParams({
         author: author,
         textChannel: textChannel,
         voiceChannel: voiceChannel,

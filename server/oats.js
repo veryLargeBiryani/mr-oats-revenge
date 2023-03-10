@@ -57,7 +57,7 @@ app.get('/api/:session/:command', async (req,res)=>{
 		res.send(message);
 		announce(session,message); //discord endpoint
 	},(err)=>{
-		res.send(session,message);
+		res.send(session);
 		announce(err.stack);
 	})
 });
