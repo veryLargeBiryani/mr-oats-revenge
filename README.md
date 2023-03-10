@@ -16,7 +16,8 @@ Example config.json:
 {
   "token": "<your-token>",
   "client_id": "<your-client-id>",
-  "test_guild_id": "<your-guild-id>"
+  "test_guild_id": "<your-guild-id>",
+  "PORT": <desired-port>
 }
 ```
 Mr. Oats uses play-dl to stream music from youtube or soundcloud. To avoid issues such as age restriction, you will need to [save cookies to your project folder](https://github.com/play-dl/play-dl/tree/main/instructions). 
