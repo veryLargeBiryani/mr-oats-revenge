@@ -4,7 +4,11 @@
   "description": "a bot to play music on discord",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npx webpack --config webpack.config.js",
+    "dev": "npx webpack serve --config webpack.dev.config.js",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "repository": {
     "type": "git",
@@ -23,10 +27,14 @@
     "express": "^4.18.2",
     "ffmpeg": "^0.0.4",
     "ffmpeg-static": "^5.1.0",
+    "gh-pages": "^5.0.0",
     "isomorphic-unfetch": "^4.0.2",
     "play-dl": "^1.9.6",
     "spotify-url-info": "^3.2.3",
     "tweetnacl": "^1.0.3",
+    "webpack": "^5.76.0",
+    "webpack-cli": "^5.0.1",
+    "webpack-dev-server": "^4.11.1",
     "ytpl": "^2.3.0",
     "ytsr": "^3.8.0"
   }

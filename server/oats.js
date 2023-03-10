@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const app = express() , PORT = 3000;
+const app = express() , PORT = 3001;
 const { Client, GatewayIntentBits, Events } = require('discord.js');
 const { token } = require('./config.json');
 const commandLib = require('./src/utils/command-loader');
@@ -49,7 +49,7 @@ client.on(Events.InteractionCreate, async interaction => {
 });
 
 //listen for API requests
-app.get('/:session/:command', async (req,res)=>{
+app.get('/api/:session/:command', async (req,res)=>{
 	let session = sessionDir.get(req.params.session);
 	let commandArgs = req.query;
 	const command = client.commands.get(req.params.command);
@@ -61,6 +61,3 @@ app.get('/:session/:command', async (req,res)=>{
 		announce(err.stack);
 	})
 });
-
-//mr oats homepage
-app.get('/', async (req,res) => res.sendFile(path.join(__dirname,'public','index.html')));

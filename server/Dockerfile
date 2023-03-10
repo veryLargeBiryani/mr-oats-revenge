@@ -1,3 +1,4 @@
+# THIS NEEDS TO BE UPDATED TO CONFORM TO NEW WEBPACK FILE STRUCTURE
 # inherit from node version 17 package
 FROM node:16.16.0
 # establish a working directory
