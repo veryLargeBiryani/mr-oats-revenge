@@ -9,7 +9,7 @@
 <body>
   <h1>Welcome to Mr. Oats! This shit primitive as hell.</h1>
 
-  <!-- our submission form -->
+  <!-- submit commands to api -->
   <form>
     Server: <select id="guild">
       <option value="143574022368526337">The Lad Shed</option>
@@ -18,11 +18,10 @@
   <br/>
     <input type="radio" name="command" id="play" value="play"> <label for="play">Play</label>
     <input type="radio" name="command" id="skip" value="skip"> <label for="skip">Skip</label>
-    <input type="radio" name="command" id="queue" value="queue"> <label for="queue">See Queue</label>
+    <input type="radio" name="command" id="queued" value="queued"> <label for="queued">See Queue</label>
   <br/>
-    <input type="URL">
   </form>
-
+  <b id="urlLabel" hidden>Song:</b><input type="URL" id="url" hidden>
   <script src="bundle.js"></script>
 </body>
 </html>
