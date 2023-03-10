@@ -11,15 +11,16 @@
               <option value="143574022368526337">The Lad Shed</option>
               <option value="953147924357992488">chuck e cheese sanctuary</option>
             </select>
-            Command: <select id="command" required>
-              <option value="play">Play</option>
-              <option value="skip">Skip</option>
-              <option value="queued">See the Queue</option>
-            <input type="URL" required>
-            </select>
-            <button type="button">Submit</button> <!--can also use <input type="submit"> -->
+          <br/>
+            <input type="radio" name="command" id="play" value="play"> <label for="play">Play</label>
+            <input type="radio" name="command" id="skip" value="skip"> <label for="skip">Skip</label>
+            <input type="radio" name="command" id="queue" value="queue"> <label for="queue">See Queue</label>
+          <br/>
+            <input type="URL">
           </form>
+          <button onclick="sendCommand()">Submit</button>
     </body>
 
-    <script></script>
+    <script src="./scripts/sendCommand.js"></script>
+
 </html>
