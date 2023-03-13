@@ -5,4 +5,4 @@ config.json
 .data
 
 #webpack dev
-client/dist
+dist
