@@ -1,9 +1,8 @@
-# ignore node modules
 node_modules
 
-# ignore config
+# ignore configuration
 config.json
-
-*.mp3
-#hide youtube cookie info
 .data
+
+#webpack dev
+client/dist

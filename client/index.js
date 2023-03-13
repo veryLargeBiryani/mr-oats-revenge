@@ -1,4 +1,7 @@
 import { sendCommand } from './sendCommand';
+import { authCheck } from './authcheck';
+
+window.onload = authCheck();
 
 //get basic form fields
 let form = {
