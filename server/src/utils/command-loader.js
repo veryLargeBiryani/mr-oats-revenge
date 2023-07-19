@@ -6,7 +6,7 @@ const { Collection } = require('discord.js');
 module.exports = function(){
     //initialize path and command map
     commands = new Collection();
-    const commandsPath = path.join(__dirname, 'commands');
+    const commandsPath = path.join(__dirname, '..', 'commands');
     const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js')); //get only js files
     //loop through the commands folder and add each file to the commands list
     for (const file of commandFiles) {
