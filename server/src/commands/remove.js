@@ -8,6 +8,7 @@ module.exports = {
             option.setRequired(false)
             .setName('number')
             .setDescription('Which song do you want to remove? Defaults to last song.')
+            .setMinValue(2) //can't remove song that is currently playing
         ),
 	async execute(session,command) {
         if (command.skipNum - 1 > session.queue.contents.length) command.skipNum = session.queue.contents.length; //default to last song if number is too big
