@@ -21,8 +21,8 @@ module.exports = class Queue {
         }
     }
 
-    async rm(position){//position defaults to last
-
+    async rm(position=this.contents.length-1){//position defaults to last
+        this.contents.splice(position,1);
     }
 
     async nowPlaying(){
@@ -30,6 +30,7 @@ module.exports = class Queue {
     }
 
     report(){//return list of what's in the queue
+        if (!this.contents) return null;
         let queued = '';
         for (const song of this.contents){
             queued+=`${song.title}\n`;

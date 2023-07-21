@@ -51,7 +51,9 @@ module.exports = class Song {
     async search(query){
         let filter = await ytsr.getFilters(query);
         let search = await ytsr(filter.get('Type').get('Video').url,{pages : 1});
-        this.url = search.items[0].url;
-        this.title = search.items[0].title;
+        if (search.items){ //if song is found
+            this.url = search.items[0].url;
+            this.title = search.items[0].title;
+        }
     }
 }

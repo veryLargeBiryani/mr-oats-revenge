@@ -40,7 +40,7 @@ module.exports = async (command)=>{
                 if (i > 20) break; //playlist length limit
                 let song = new Song();
                 await song.init({source: 'search', query: `${playlist[i].name} ${playlist[i].artist}`}); //swap source to youtube search
-                tracks.push(song);
+                if (song.title && song.url) tracks.push(song); //only add song to the list if it is found
             }
             break;
     }

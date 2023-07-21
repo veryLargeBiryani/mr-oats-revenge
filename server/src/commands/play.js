@@ -44,6 +44,6 @@ module.exports = {
 			await session.queue.contents[0].getStream(); 
 			session.player.play(session.queue.contents[0].resource); 
 		}
- 		return 'Song Queued';
+ 		return `Queued: [${session.queue.contents[session.queue.contents.length-1].title}](${session.queue.contents[session.queue.contents.length-1].url})`;
 	}
 };

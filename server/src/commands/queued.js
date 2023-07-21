@@ -6,6 +6,8 @@ module.exports = {
 		.setName('queued') //name properties in commands/options cannot have uppercase letters, spaces, or symbols (but choices can)
 		.setDescription("See what's queued!"),
 	async execute(session,command){
-        return session.queue.report();
+		let queue = session.queue.report();
+		if (!queue) return "Nothing is currently queued.";
+		else return queue;
 	}
 };

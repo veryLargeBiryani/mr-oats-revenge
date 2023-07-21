@@ -1,6 +1,7 @@
 //dependencies
 const { joinVoiceChannel, createAudioPlayer, NoSubscriberBehavior, AudioPlayerStatus  } = require('@discordjs/voice');
 const Queue = require('./queue');
+const announce = require('../responses/announce')
 
 module.exports = class Session {
     constructor(){
@@ -27,6 +28,7 @@ module.exports = class Session {
             else {
                 await this.queue.contents[0].getStream(); 
                 this.player.play(this.queue.contents[0].resource);
+                announce(this,`Now Playing: [${this.queue.contents[0].title}](${this.queue.contents[0].url})`) //now playing message
             }
         });
 

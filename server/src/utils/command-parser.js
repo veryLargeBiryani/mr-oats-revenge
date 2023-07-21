@@ -6,7 +6,7 @@ module.exports = (interaction)=>{
         author: interaction.member,
         textChannel: interaction.channelId
     };
-    if (interaction.commandName == 'skip') command.skipNum = interaction.options._hoistedOptions[0]?.value;    
+    if (interaction.commandName == 'skip' || interaction.commandName == 'remove') command.skipNum = interaction.options._hoistedOptions[0]?.value;    
     if (interaction.commandName == 'play') {
         command.mode = interaction.options._subcommand;
         command.pos = interaction.options._hoistedOptions[1]?.value;

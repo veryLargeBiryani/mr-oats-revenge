@@ -35,8 +35,11 @@ client.on(Events.InteractionCreate, async interaction => {
 	if (!command) return reply(interaction,`[ERROR] No command matching ${interaction.commandName} was found.`);
 
 	let commandArgs = parser(interaction);
+	if (!commandArgs.channel) return reply(interaction, `[ERROR] User is not in a voice channel.`);
+
 	let session = sessionDir.get(interaction.guild.id);
 	if (!session){ //create a new session if needed
+		if (!interaction.commandName.includes('play')) return reply(interaction, `[ERROR] This command cannot be used until something has been played.`);
 		session = new Session();
 		await session.init(commandArgs);
 		sessionDir.set(interaction.guild.id, session);
